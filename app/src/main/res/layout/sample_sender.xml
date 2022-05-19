@@ -37,7 +37,7 @@
             android:inputType="textLongMessage|textMultiLine"
             android:maxWidth="270dp"
             android:minWidth="50dp"
-            android:text="lala"
+            android:text="TextView"
             app:layout_constraintBottom_toTopOf="@id/senderTime"
             app:layout_constraintEnd_toStartOf="@id/guideline2"
             app:layout_constraintStart_toStartOf="parent"
