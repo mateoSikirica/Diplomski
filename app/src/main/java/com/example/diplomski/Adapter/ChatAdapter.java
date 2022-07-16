@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,6 +16,7 @@ import com.example.diplomski.Models.MessageModel;
 import com.example.diplomski.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.Date;
 public class ChatAdapter extends RecyclerView.Adapter{
 
     ArrayList<MessageModel> messageModels;
+    MessageModel messageModel1;
     Context context;
     String recId;
 
@@ -55,6 +58,7 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
     @Override
     public int getItemViewType(int position) {
+        messageModel1 = messageModels.get(position);
         if(messageModels.get(position).getuId().equals(FirebaseAuth.getInstance().getUid())) {
             return SENDER_VIEW_TYPE;
         }
@@ -115,6 +119,11 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
             receiverMsg = itemView.findViewById(R.id.receiverText);
             receiverTime = itemView.findViewById(R.id.receiverTime);
+            if(messageModel1.getImage() != null) {
+                if(!messageModel1.getImage().equals("")) {
+                    Picasso.get().load(messageModel1.getImage()).into((ImageView) itemView.findViewById(R.id.imageReceiver));
+                }
+            }
         }
     }
 
@@ -126,6 +135,11 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
             senderMsg = itemView.findViewById(R.id.senderText);
             senderTime = itemView.findViewById(R.id.senderTime);
+            if(messageModel1.getImage() != null) {
+                if(!messageModel1.getImage().equals("")) {
+                    Picasso.get().load(messageModel1.getImage()).into((ImageView) itemView.findViewById(R.id.imageSender));
+                }
+            }
         }
     }
 }
