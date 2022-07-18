@@ -112,16 +112,20 @@ public class GroupChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final String message = binding.enterMessage.getText().toString();
-                final MessageModel model = new MessageModel(senderId, message + " - " + senderNameGlobal);
-                model.setTimestamp(new Date().getTime());
+                if (message.equals("")) {
 
-                binding.enterMessage.setText("");
-                database.getReference().child("Group Chat").push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
+                } else {
+                    final MessageModel model = new MessageModel(senderId, message + " - " + senderNameGlobal);
+                    model.setTimestamp(new Date().getTime());
 
-                    }
-                });
+                    binding.enterMessage.setText("");
+                    database.getReference().child("Group Chat").push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+
+                        }
+                    });
+                }
             }
         });
 
@@ -163,5 +167,11 @@ public class GroupChatActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(GroupChatActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 }

@@ -48,7 +48,6 @@ public class ChatDetailActivity extends AppCompatActivity {
 
         final String senderId = auth.getUid();
         senderIdGlobal = senderId;
-        Uri a = getIntent().getData();
         String receiverId = getIntent().getStringExtra("userId");
         receiverIdGlobal = receiverId;
         String userName = getIntent().getStringExtra("userName");
@@ -81,19 +80,12 @@ public class ChatDetailActivity extends AppCompatActivity {
         database.getReference().child("chats").child(senderRoom).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean imageProcessedFlag = false;
                 messageModels.clear();
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     MessageModel model = null;
-                    if(snapshot1.getKey().equals("image") && !imageProcessedFlag) {
-                        imageProcessedFlag = true;
-                        model = new MessageModel(senderId, "", snapshot1.getValue().toString(), new Date().getTime());
-                        messageModels.add(model);
-                    } else if(!snapshot1.getKey().equals("message") && !snapshot1.getKey().equals("timestamp") && !snapshot1.getKey().equals("uId") && !snapshot1.getKey().equals("")) {
-                        model = snapshot1.getValue(MessageModel.class);
-                        model.setMessageId(snapshot1.getKey());
-                        messageModels.add(model);
-                    }
+                    model = snapshot1.getValue(MessageModel.class);
+                    model.setMessageId(snapshot1.getKey());
+                    messageModels.add(model);
                 }
 
                 chatAdapter.notifyDataSetChanged();
@@ -109,21 +101,25 @@ public class ChatDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String message = binding.enterMessage.getText().toString();
-                final MessageModel model = new MessageModel(senderId, message, "");
-                model.setTimestamp(new Date().getTime());
-                binding.enterMessage.setText("");
+                if(message.equals("")) {
 
-                database.getReference().child("chats").child(senderRoom).push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        database.getReference().child("chats").child(receiverRoom).push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
+                } else {
+                    final MessageModel model = new MessageModel(senderId, message, "");
+                    model.setTimestamp(new Date().getTime());
+                    binding.enterMessage.setText("");
 
-                            }
-                        });
-                    }
-                });
+                    database.getReference().child("chats").child(senderRoom).push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            database.getReference().child("chats").child(receiverRoom).push().setValue(model).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+
+                                }
+                            });
+                        }
+                    });
+                }
             }
         });
 
@@ -149,22 +145,30 @@ public class ChatDetailActivity extends AppCompatActivity {
             if (data.getData() != null) {
                 Uri sFile = data.getData();
 
-                final StorageReference reference = storage.getReference().child("image").child(FirebaseAuth.getInstance().getUid());
+                final StorageReference reference = storage.getReference().child("image").child(FirebaseAuth.getInstance().getUid()).child(data.getData().toString());
 
-                reference.putFile(sFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                final MessageModel model = new MessageModel(senderIdGlobal, "", uri.toString(), new Date().getTime());
-                                database.getReference().child("chats").child(receiverRoomGlobal).push().setValue(model);
-                                database.getReference().child("chats").child(senderRoomGlobal).push().setValue(model);
-                            }
-                        });
-                    }
-                });
+                if(sFile != null) {
+                    reference.putFile(sFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            reference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    final MessageModel model = new MessageModel(senderIdGlobal, "", uri.toString(), new Date().getTime());
+                                    database.getReference().child("chats").child(receiverRoomGlobal).push().setValue(model);
+                                    database.getReference().child("chats").child(senderRoomGlobal).push().setValue(model);
+                                }
+                            });
+                        }
+                    });
+                }
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(ChatDetailActivity.this, MainActivity.class);
+        startActivity(intent);
     }
 }

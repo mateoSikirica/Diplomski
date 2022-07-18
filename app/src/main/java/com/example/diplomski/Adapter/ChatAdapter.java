@@ -121,7 +121,10 @@ public class ChatAdapter extends RecyclerView.Adapter{
             receiverTime = itemView.findViewById(R.id.receiverTime);
             if(messageModel1.getImage() != null) {
                 if(!messageModel1.getImage().equals("")) {
-                    Picasso.get().load(messageModel1.getImage()).into((ImageView) itemView.findViewById(R.id.imageReceiver));
+                    Picasso.get().load(messageModel1.getImage()).resize(1200, 1200).onlyScaleDown().centerInside().into((ImageView) itemView.findViewById(R.id.imageReceiver));
+                }
+                else {
+                    itemView.findViewById(R.id.imageReceiver).setVisibility(View.GONE);
                 }
             }
         }
@@ -135,10 +138,11 @@ public class ChatAdapter extends RecyclerView.Adapter{
 
             senderMsg = itemView.findViewById(R.id.senderText);
             senderTime = itemView.findViewById(R.id.senderTime);
-            if(messageModel1.getImage() != null) {
-                if(!messageModel1.getImage().equals("")) {
-                    Picasso.get().load(messageModel1.getImage()).into((ImageView) itemView.findViewById(R.id.imageSender));
-                }
+            if(messageModel1.getImage() != null && !messageModel1.getImage().equals("")) {
+                Picasso.get().load(messageModel1.getImage()).resize(1200, 1200).onlyScaleDown().centerInside().into((ImageView) itemView.findViewById(R.id.imageSender));
+            }
+            else {
+                itemView.findViewById(R.id.imageSender).setVisibility(View.GONE);
             }
         }
     }
