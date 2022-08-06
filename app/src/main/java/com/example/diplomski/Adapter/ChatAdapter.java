@@ -71,25 +71,27 @@ public class ChatAdapter extends RecyclerView.Adapter{
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MessageModel messageModel = messageModels.get(position);
         holder.setIsRecyclable(false);
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                new AlertDialog.Builder(context).setTitle("Delete").setMessage("Are you sure you want to delete this message?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        FirebaseDatabase database = FirebaseDatabase.getInstance();
-                        String senderRoom = FirebaseAuth.getInstance().getUid() + recId;
-                        database.getReference().child("chats").child(senderRoom).child(messageModel.getMessageId()).setValue(null);
-                    }
-                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                }).show();
-                return false;
-            }
-        });
+        String senderRoom = FirebaseAuth.getInstance().getUid() + recId;
+        if(senderRoom.length() > 42) {
+            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    new AlertDialog.Builder(context).setTitle("Delete").setMessage("Are you sure you want to delete this message?").setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+                            database.getReference().child("chats").child(senderRoom).child(messageModel.getMessageId()).setValue(null);
+                        }
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    }).show();
+                    return false;
+                }
+            });
+        }
 
         if(holder.getClass() == SenderViewHolder.class) {
             ((SenderViewHolder) holder).senderMsg.setText(messageModel.getMessage());

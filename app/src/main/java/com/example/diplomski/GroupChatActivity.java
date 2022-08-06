@@ -145,7 +145,7 @@ public class GroupChatActivity extends AppCompatActivity {
             if (data.getData() != null) {
                 Uri sFile = data.getData();
 
-                final StorageReference reference = storage.getReference().child("image").child(FirebaseAuth.getInstance().getUid());
+                final StorageReference reference = storage.getReference().child("image").child(FirebaseAuth.getInstance().getUid()).child(data.getData().toString());
 
                 reference.putFile(sFile).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
