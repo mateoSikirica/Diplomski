@@ -85,20 +85,14 @@ public class GroupChatActivity extends AppCompatActivity {
         database.getReference().child("Group Chat").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Boolean imageProcessedFlag = false;
                 messageModels.clear();
                 for (DataSnapshot snapshot1 : snapshot.getChildren()) {
                     MessageModel model = null;
-                    if(snapshot1.getKey().equals("image") && !imageProcessedFlag) {
-                        imageProcessedFlag = true;
-                        model = new MessageModel(senderId, "", snapshot1.getValue().toString(), new Date().getTime());
-                        messageModels.add(model);
-                    } else if(!snapshot1.getKey().equals("message") && !snapshot1.getKey().equals("timestamp") && !snapshot1.getKey().equals("uId") && !snapshot1.getKey().equals("")) {
-                        model = snapshot1.getValue(MessageModel.class);
-                        model.setMessageId(snapshot1.getKey());
-                        messageModels.add(model);
-                    }
+                    model = snapshot1.getValue(MessageModel.class);
+                    model.setMessageId(snapshot1.getKey());
+                    messageModels.add(model);
                 }
+
                 adapter.notifyDataSetChanged();
             }
 
